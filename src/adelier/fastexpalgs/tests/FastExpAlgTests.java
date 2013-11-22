@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import adelier.fastexpalgs.ExpAlg;
+import adelier.fastexpalgs.impl.Euclid;
 import adelier.fastexpalgs.impl.FloatingWindow;
 import adelier.fastexpalgs.impl.JavaModPow;
 import adelier.fastexpalgs.impl.RightToLeft;
@@ -16,8 +17,9 @@ import adelier.fastexpalgs.impl.RightToLeft;
 public class FastExpAlgTests {
 
 	@Test
-	public void testAll() {
+	public void testAll() throws Exception {
 		List<ExpAlg> algs = new LinkedList<>();
+		algs.add(new Euclid(4, new JavaModPow()));
 		algs.add(new JavaModPow());
 		algs.add(new RightToLeft());
 		algs.add(new FloatingWindow(1));
@@ -27,18 +29,19 @@ public class FastExpAlgTests {
 		algs.add(new FloatingWindow(18));
 
 		for (ExpAlg alg : algs) {
-			testSamll(alg);
+			testSmall(alg);
 			testBig(alg);
 		}
 	}
-	
-	public void testSamll(ExpAlg alg) {
+
+	public void testSmall(ExpAlg alg) {
 		BigInteger p = BigInteger.valueOf(59);
-		for (int x = 0; x < 1300; x+=100) {
+		for (int x = 0; x < 1300; x += 100) {
 			for (int n = x; n <= x; n++) {
 				BigInteger testx = BigInteger.valueOf(x);
 				BigInteger testn = BigInteger.valueOf(n);
-				assertEquals(String.format("x=%d ", x), testx.modPow(testn, p), alg.exp(testx, testn, p));
+				assertEquals(String.format("x=%d ", x), testx.modPow(testn, p),
+						alg.exp(testx, testn, p));
 			}
 		}
 
@@ -50,9 +53,10 @@ public class FastExpAlgTests {
 		BigInteger testx = new BigInteger("1000000000000011");
 		BigInteger testn = new BigInteger("600000000000000000");
 
+		BigInteger actual = alg.exp(testx, testn, p);
 		assertEquals(
 				new BigInteger(
 						"13087491684241113015517525582381613551928185857402745136182486373380571629891992887325360809621036323435147995753689131058003871403129905512753230328864264094195812407844859696667522469379932692152002017028617447019139080656538413749656533169945448023321252644854812765964963906168540691779057780799153488537885375483903168455749477368549139733097079453946133105379277716581209170464138999046593339063443707166012212912759386371444948066493750462047668008126003102475499988244119660377327710182302219921296757289124472606698113754579466279830808416998732593942224585948797878307937826716821824061030588235929695917435"),
-				alg.exp(testx, testn, p));
+				actual);
 	}
 }
