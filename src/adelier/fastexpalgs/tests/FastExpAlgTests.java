@@ -12,26 +12,72 @@ import adelier.fastexpalgs.ExpAlg;
 import adelier.fastexpalgs.impl.Euclid;
 import adelier.fastexpalgs.impl.FloatingWindow;
 import adelier.fastexpalgs.impl.JavaModPow;
+import adelier.fastexpalgs.impl.LeftToRight;
+import adelier.fastexpalgs.impl.LeftToRight;
+import adelier.fastexpalgs.impl.RightToLeft;
 import adelier.fastexpalgs.impl.RightToLeft;
 
 public class FastExpAlgTests {
 
 	@Test
-	public void testAll() throws Exception {
-		List<ExpAlg> algs = new LinkedList<>();
-		algs.add(new Euclid(4, new JavaModPow()));
-		algs.add(new JavaModPow());
-		algs.add(new RightToLeft());
-		algs.add(new FloatingWindow(1));
-		algs.add(new FloatingWindow(2));
-		algs.add(new FloatingWindow(3));
-		algs.add(new FloatingWindow(12));
-		algs.add(new FloatingWindow(18));
-
-		for (ExpAlg alg : algs) {
-			testSmall(alg);
-			testBig(alg);
-		}
+	public void testRightToLeft(){
+		ExpAlg alg = new RightToLeft();
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testLeftToRight(){
+		ExpAlg alg = new LeftToRight();
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testJavaModPow(){
+		ExpAlg alg = new JavaModPow();
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testFloatingWindow1(){
+		ExpAlg alg = new FloatingWindow(1);
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testFloatingWindow2(){
+		ExpAlg alg = new FloatingWindow(2);
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testFloatingWindow7(){
+		ExpAlg alg = new FloatingWindow(7);
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testFloatingWindow12(){
+		ExpAlg alg = new FloatingWindow(12);
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testFloatingWindow18(){
+		ExpAlg alg = new FloatingWindow(18);
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testEuclid4() throws Exception{
+		ExpAlg alg = new Euclid(4, new JavaModPow());
+		testSmall(alg);
+		testBig(alg);
+	}
+	@Test
+	public void testEuclid40() throws Exception{
+		ExpAlg alg = new Euclid(40, new JavaModPow());
+		testSmall(alg);
+		testBig(alg);
 	}
 
 	public void testSmall(ExpAlg alg) {
@@ -40,6 +86,8 @@ public class FastExpAlgTests {
 			for (int n = x; n <= x; n++) {
 				BigInteger testx = BigInteger.valueOf(x);
 				BigInteger testn = BigInteger.valueOf(n);
+				testx = testx.mod(p);
+				testn = testn.mod(p.subtract(BigInteger.ONE));
 				assertEquals(String.format("x=%d ", x), testx.modPow(testn, p),
 						alg.exp(testx, testn, p));
 			}

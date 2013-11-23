@@ -14,6 +14,8 @@ import adelier.fastexpalgs.ExpAlgFixedExponent;
 import adelier.fastexpalgs.impl.Euclid;
 import adelier.fastexpalgs.impl.FloatingWindow;
 import adelier.fastexpalgs.impl.JavaModPow;
+import adelier.fastexpalgs.impl.LeftToRight;
+import adelier.fastexpalgs.impl.RightToLeft;
 import adelier.fastexpalgs.impl.RightToLeft;
 
 public class ExpAlgsMain {
@@ -24,14 +26,15 @@ public class ExpAlgsMain {
 
 		List<ExpAlg> algs = new LinkedList<>();
 		algs.add(new RightToLeft());
+		algs.add(new LeftToRight());
 		algs.add(new FloatingWindow(8));
 		algs.add(new JavaModPow());
-		algs.add(new Euclid(4, new JavaModPow()));
+		algs.add(new Euclid(20, new JavaModPow()));
 
 		int testBasesCount = 5;
 		int testExponentsCount = 5;
 		Random rand = new SecureRandom();
-		List<Integer> testLengths = Arrays.asList(8, 64, 512, 2048, 4096);
+		List<Integer> testLengths = Arrays.asList(8, 64, 512, 2048);
 		for (int bitLength : testLengths) {
 			BigInteger p = new BigInteger(bitLength, rand).nextProbablePrime();
 			List<BigInteger> bases = randomBigIntegerList(testBasesCount,
@@ -60,7 +63,7 @@ public class ExpAlgsMain {
 			int testExponentsCount) {
 		BigInteger res;
 
-		if (ExpAlgFixedBase.class.isAssignableFrom(alg.getClass())) {
+		/*if (ExpAlgFixedBase.class.isAssignableFrom(alg.getClass())) {
 			
 			res = profileFixedBase((ExpAlgFixedBase) alg, bases, exponents, p,
 					testBasesCount, testExponentsCount);
@@ -68,11 +71,10 @@ public class ExpAlgsMain {
 			
 			res = profileExpAlgFixedExponent((ExpAlgFixedExponent) alg, bases,
 					exponents, p, testBasesCount, testExponentsCount);
-		} else {
+		} else */{
 			res = profileNormal(alg, bases, exponents, p, testBasesCount,
 					testExponentsCount);
 		}
-
 		return res;
 	}
 

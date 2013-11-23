@@ -5,8 +5,6 @@ import java.math.BigInteger;
 import adelier.fastexpalgs.ExpAlg;
 import adelier.fastexpalgs.ExpAlgFixedBase;
 
-
-
 public class Euclid extends ExpAlgFixedBase {
 
 	private int radixBitCount, length;
@@ -20,23 +18,23 @@ public class Euclid extends ExpAlgFixedBase {
 	 */
 	private BigInteger[] xdegs;
 
-	public Euclid(int radixBitCount, ExpAlg simpleAlg) throws Exception {
+	public Euclid(int radixBitCount, ExpAlg simpleAlg) throws IllegalArgumentException {
 		if (simpleAlg.getClass().equals(this.getClass()))
-			throw new Exception("Illegal exponential algorythm");
+			throw new IllegalArgumentException("Illegal exponential algorythm");
 		this.setRadixBitCountAndMask(radixBitCount);
 		this.simpleAlg = simpleAlg;
 	}
 
 	private void setRadixBitCountAndMask(int radixBitCount) {
 		this.radixBitCount = radixBitCount;
-		this.mask = BigInteger.valueOf(2).pow(radixBitCount)
-				.subtract(BigInteger.ONE);
+		this.mask = BigInteger.ONE.shiftLeft(radixBitCount).subtract(
+				BigInteger.ONE);
 	}
 
 	@Override
 	public void precalculate(BigInteger x, BigInteger p) {
 		this.p = p;
-		this.length = (p.bitLength() - 1) / radixBitCount + 1;
+		this.length = p.bitLength() / radixBitCount + 1; // (p.bitLength() - 1) 
 		this.xdegs = new BigInteger[length];
 
 		xdegs[0] = x;
@@ -45,11 +43,16 @@ public class Euclid extends ExpAlgFixedBase {
 				x = x.multiply(x).mod(p);
 			xdegs[i] = x;
 		}
-
 	}
 
 	@Override
 	public BigInteger exp(BigInteger n) {
+		if (length == 1)
+			/*
+			 * Слишком короткое число для этого метода, вызовется просто
+			 * алгоритм для "коротких" чисел {@code simpleAlg}
+			 */
+			return simpleAlg.exp(xdegs[0], n, p);
 		BigInteger[] xdegs = this.xdegs.clone();
 		BigInteger[] ndegs = toRadixRepresentation(n);
 
@@ -66,7 +69,7 @@ public class Euclid extends ExpAlgFixedBase {
 			}
 			// k2
 			int k2 = k1 == 0 ? 1 : 0;
-			for (int i = 0; i < ndegs.length; i++) {
+			for (int i = 0; i < length; i++) {
 				if (ndegs[i] == null)
 					break;
 				if (i != k1 && ndegs[i].compareTo(ndegs[k2]) > 0) {
@@ -77,13 +80,13 @@ public class Euclid extends ExpAlgFixedBase {
 			// если второй == 0 - return x_M^nm
 			if (ndegs[k2] == null || ndegs[k2].equals(BigInteger.ZERO))
 				return simpleAlg.exp(xdegs[k1], ndegs[k1], p);
-			// иначе 
+			// иначе
 			BigInteger[] divAndMod = ndegs[k1].divideAndRemainder(ndegs[k2]);
 			// d = n_M / n_N
 			BigInteger d = divAndMod[0]; // div
 			// x_N = x_M * x_N
-			xdegs[k2] = xdegs[k2].multiply(
-					simpleAlg.exp(xdegs[k1], d, p)).mod(p);
+			xdegs[k2] = xdegs[k2].multiply(simpleAlg.exp(xdegs[k1], d, p)).mod(
+					p);
 			// n_M = n_M mod n_N
 			ndegs[k1] = divAndMod[1]; // mod
 		}
