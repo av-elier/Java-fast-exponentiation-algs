@@ -34,7 +34,7 @@ public class Euclid extends ExpAlgFixedBase {
 	@Override
 	public void precalculate(BigInteger x, BigInteger p) {
 		this.p = p;
-		this.length = p.bitLength() / radixBitCount + 1; // (p.bitLength() - 1) 
+		this.length = (p.bitLength() - 1) / radixBitCount + 1; // (p.bitLength() - 1) 
 		this.xdegs = new BigInteger[length];
 
 		xdegs[0] = x;
@@ -85,20 +85,25 @@ public class Euclid extends ExpAlgFixedBase {
 			// d = n_M / n_N
 			BigInteger d = divAndMod[0]; // div
 			// x_N = x_M * x_N
-			xdegs[k2] = xdegs[k2].multiply(simpleAlg.exp(xdegs[k1], d, p)).mod(
-					p);
+			xdegs[k2] = xdegs[k2].multiply(simpleAlg.exp(xdegs[k1], d, p)).mod(p);
 			// n_M = n_M mod n_N
 			ndegs[k1] = divAndMod[1]; // mod
 		}
 	}
 
 	private BigInteger[] toRadixRepresentation(BigInteger val) {
-		BigInteger[] radixRepr = new BigInteger[length];
+		BigInteger[] res = new BigInteger[length];
 		int k = 0;
 		while (!val.equals(BigInteger.ZERO)) {
-			radixRepr[k++] = val.and(mask);
+			res[k++] = val.and(mask);
 			val = val.shiftRight(radixBitCount);
 		}
-		return radixRepr;
+		return res;
 	}
+
+	@Override
+	public String toString() {
+		return this.getClass().getName() + " with radixBitCount = " + radixBitCount;
+	}
+	
 }

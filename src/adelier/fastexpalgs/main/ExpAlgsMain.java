@@ -16,7 +16,6 @@ import adelier.fastexpalgs.impl.FloatingWindow;
 import adelier.fastexpalgs.impl.JavaModPow;
 import adelier.fastexpalgs.impl.LeftToRight;
 import adelier.fastexpalgs.impl.RightToLeft;
-import adelier.fastexpalgs.impl.RightToLeft;
 
 public class ExpAlgsMain {
 
@@ -31,19 +30,19 @@ public class ExpAlgsMain {
 		algs.add(new JavaModPow());
 		algs.add(new Euclid(20, new JavaModPow()));
 
-		int testBasesCount = 5;
-		int testExponentsCount = 5;
+		double bistOnTest = 16*1024;
 		Random rand = new SecureRandom();
-		List<Integer> testLengths = Arrays.asList(8, 64, 512, 2048);
+		List<Integer> testLengths = Arrays.asList(8, 64, 512, 2048, 4*1024, 8*1024);
 		for (int bitLength : testLengths) {
-			BigInteger p = new BigInteger(bitLength, rand).nextProbablePrime();
-			List<BigInteger> bases = randomBigIntegerList(testBasesCount,
-					bitLength, rand);
+			BigInteger p = new BigInteger(bitLength, rand);//.nextProbablePrime();
+			int testBasesCount = (int) Math.floor(Math.sqrt(bistOnTest / bitLength));
+			int testExponentsCount = (int) Math.ceil(Math.sqrt(bistOnTest / bitLength));
+			List<BigInteger> bases = randomBigIntegerList(
+					testBasesCount, bitLength, rand);
 			List<BigInteger> exponents = randomBigIntegerList(
 					testExponentsCount, bitLength, rand);
 			for (ExpAlg alg : algs)
-				profile(alg, bases, exponents, p, testBasesCount,
-						testExponentsCount);
+				profile(alg, bases, exponents, p);
 		}
 
 		// new Scanner(System.in).nextLine();
@@ -57,10 +56,12 @@ public class ExpAlgsMain {
 		}
 		return exponents;
 	}
+	
+	
+	
 
 	private static BigInteger profile(ExpAlg alg, List<BigInteger> bases,
-			List<BigInteger> exponents, BigInteger p, int testBasesCount,
-			int testExponentsCount) {
+			List<BigInteger> exponents, BigInteger p) {
 		BigInteger res;
 
 		/*if (ExpAlgFixedBase.class.isAssignableFrom(alg.getClass())) {
@@ -72,15 +73,13 @@ public class ExpAlgsMain {
 			res = profileExpAlgFixedExponent((ExpAlgFixedExponent) alg, bases,
 					exponents, p, testBasesCount, testExponentsCount);
 		} else */{
-			res = profileNormal(alg, bases, exponents, p, testBasesCount,
-					testExponentsCount);
+			res = profileNormal(alg, bases, exponents, p);
 		}
 		return res;
 	}
 
 	private static BigInteger profileNormal(ExpAlg alg, List<BigInteger> bases,
-			List<BigInteger> exponents, BigInteger p, int testBasesCount,
-			int testExponentsCount) {
+			List<BigInteger> exponents, BigInteger p) {
 		BigInteger res = BigInteger.ONE;
 		for (BigInteger x : bases) {
 			for (BigInteger n : exponents) {
@@ -91,8 +90,7 @@ public class ExpAlgsMain {
 	}
 
 	private static BigInteger profileFixedBase(ExpAlgFixedBase alg,
-			List<BigInteger> bases, List<BigInteger> exponents, BigInteger p,
-			int testBasesCount, int testExponentsCount) {
+			List<BigInteger> bases, List<BigInteger> exponents, BigInteger p) {
 		BigInteger res = BigInteger.ONE;
 		for (BigInteger x : bases) {
 			alg.precalculate(x, p);
@@ -105,8 +103,7 @@ public class ExpAlgsMain {
 
 	private static BigInteger profileExpAlgFixedExponent(
 			ExpAlgFixedExponent alg, List<BigInteger> bases,
-			List<BigInteger> exponents, BigInteger p, int testBasesCount,
-			int testExponentsCount) {
+			List<BigInteger> exponents, BigInteger p) {
 		// TODO Auto-generated method stub
 		return null;
 	}
