@@ -28,8 +28,35 @@ public class ExpAlgsMain {
 		algs.add(new LeftToRight());
 		algs.add(new FloatingWindow(8));
 		algs.add(new JavaModPow());
-		algs.add(new Euclid(20, new JavaModPow()));
+		algs.add(new Euclid(200, new JavaModPow()));
 
+		completeProf(algs);
+		//completeProfOld(algs);
+	}
+	private static void completeProfOld(List<ExpAlg> algs) {
+		for (ExpAlg expAlg : algs) {
+			long time = profileOld(expAlg);
+			System.out.println(time/1000.0 + "\t" + expAlg);
+		}
+	}
+	
+	private static long profileOld(ExpAlg algo){
+		int testsCount = 300;
+		BigInteger res;
+		BigInteger p = new BigInteger("27712789691413846856012333153970297296163904004968269562890174449688286689257199609606535023277510515406034761982956594518529310511546197362568094872418982726657993701492763179666043542495989488079404320326261147722413208737192692418855589011153981546533455140457076112131239236203432902115682930366048558529408451428808206998758788180262272085883410424636537719739093395540455527338386935943856295506908799163300014272396102579730407670957135454497986490504948008147820336881023710843768633407741391118690537112243688304714186312631347293412881026493085011018061051821439480590001356880342976195464741900137237920847");
+        
+		BigInteger samplex = new BigInteger("1000000000000011");
+		BigInteger samplen = new BigInteger("600000000000000000");
+		
+		long st = System.currentTimeMillis();
+		
+		for (int i = 0; i < testsCount; ++i)
+			res = algo.exp(samplex, samplen, p);
+		
+		return System.currentTimeMillis() - st;
+	}
+
+	private static void completeProf(List<ExpAlg> algs) {
 		double bistOnTest = 16*1024;
 		Random rand = new SecureRandom();
 		List<Integer> testLengths = Arrays.asList(8, 64, 512, 2048, 4*1024, 8*1024);
@@ -44,8 +71,6 @@ public class ExpAlgsMain {
 			for (ExpAlg alg : algs)
 				profile(alg, bases, exponents, p);
 		}
-
-		// new Scanner(System.in).nextLine();
 	}
 
 	private static List<BigInteger> randomBigIntegerList(int length,
