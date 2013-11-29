@@ -28,10 +28,10 @@ public class ExpAlgsMain {
 		algs.add(new LeftToRight());
 		algs.add(new FloatingWindow(8));
 		algs.add(new JavaModPow());
-		algs.add(new Euclid(200, new JavaModPow()));
+		//algs.add(new Euclid(200, new JavaModPow()));
 
-		completeProf(algs);
-		//completeProfOld(algs);
+		//completeProf(algs);
+		completeProfOld(algs);
 	}
 	private static void completeProfOld(List<ExpAlg> algs) {
 		for (ExpAlg expAlg : algs) {
@@ -41,7 +41,7 @@ public class ExpAlgsMain {
 	}
 	
 	private static long profileOld(ExpAlg algo){
-		int testsCount = 300;
+		int testsCount = 3000;
 		BigInteger res;
 		BigInteger p = new BigInteger("27712789691413846856012333153970297296163904004968269562890174449688286689257199609606535023277510515406034761982956594518529310511546197362568094872418982726657993701492763179666043542495989488079404320326261147722413208737192692418855589011153981546533455140457076112131239236203432902115682930366048558529408451428808206998758788180262272085883410424636537719739093395540455527338386935943856295506908799163300014272396102579730407670957135454497986490504948008147820336881023710843768633407741391118690537112243688304714186312631347293412881026493085011018061051821439480590001356880342976195464741900137237920847");
         
@@ -57,9 +57,9 @@ public class ExpAlgsMain {
 	}
 
 	private static void completeProf(List<ExpAlg> algs) {
-		double bistOnTest = 16*1024;
+		double bistOnTest = 4*1024;
 		Random rand = new SecureRandom();
-		List<Integer> testLengths = Arrays.asList(8, 64, 512, 2048, 4*1024, 8*1024);
+		List<Integer> testLengths = Arrays.asList(8, 64, 512, 2048, 4*1024);
 		for (int bitLength : testLengths) {
 			BigInteger p = new BigInteger(bitLength, rand);//.nextProbablePrime();
 			int testBasesCount = (int) Math.floor(Math.sqrt(bistOnTest / bitLength));
@@ -129,7 +129,13 @@ public class ExpAlgsMain {
 	private static BigInteger profileExpAlgFixedExponent(
 			ExpAlgFixedExponent alg, List<BigInteger> bases,
 			List<BigInteger> exponents, BigInteger p) {
-		// TODO Auto-generated method stub
+		BigInteger res = BigInteger.ONE;
+		for (BigInteger n : exponents) {
+			alg.precalculate(n, p);
+			for (BigInteger x : bases) {
+				res = alg.exp(x);
+			}
+		}
 		return null;
 	}
 }
