@@ -19,7 +19,7 @@ public class Euclid extends ExpAlgFixedBase {
 	private BigInteger[] xdegs;
 
 	public Euclid(int radixBitCount, ExpAlg simpleAlg) throws IllegalArgumentException {
-		if (simpleAlg.getClass().equals(this.getClass()))
+		if (simpleAlg instanceof ExpAlgFixedBase)
 			throw new IllegalArgumentException("Illegal exponential algorythm");
 		this.setRadixBitCountAndMask(radixBitCount);
 		this.simpleAlg = simpleAlg;
